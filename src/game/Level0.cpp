@@ -97,7 +97,7 @@ bool ChatHandler::HandleServerInfoCommand(char* /*args*/)
     std::string str = secsToTimeString(sWorld.GetUptime());
     uint32 updateTime = sWorld.GetUpdateTime();
 
-    char const* full;
+    /*char const* full;
     char const* fullR2;
     if (m_session)
     {
@@ -124,16 +124,16 @@ bool ChatHandler::HandleServerInfoCommand(char* /*args*/)
         SendSysMessage(LANG_USING_SCRIPT_LIB_NONE);
 
     PSendSysMessage(LANG_USING_WORLD_DB, sWorld.GetDBVersion());
-    PSendSysMessage(LANG_USING_EVENT_AI, sWorld.GetCreatureEventAIVersion());
+    PSendSysMessage(LANG_USING_EVENT_AI, sWorld.GetCreatureEventAIVersion());*/
     PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
-    PSendSysMessage("Update time diff: %u", updateTime);
+    /*PSendSysMessage("Update time diff: %u", updateTime);
 
     if (!m_session || m_session->GetSecurity() > SEC_MODERATOR)
     {
         SendSysMessage("");
         PSendSysMessage("Loaded maps [id:name:count:players] (%u):%s", sMapMgr.Maps().size(), sMapMgr.GetStrMaps().c_str());
-    }
+    }*/
 
     return true;
 }
