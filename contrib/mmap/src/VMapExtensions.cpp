@@ -58,7 +58,7 @@ namespace VMAP
     }
 
     // declared in src/shared/vmap/ModelInstance.h
-    WorldModel* const ModelInstance::getWorldModel()
+    WorldModelPtr const ModelInstance::getWorldModel()
     {
         return iModel;
     }
