@@ -101,8 +101,8 @@ void CreateDir(const std::string& Path)
 
 bool FileExists(const char* FileName)
 {
-    int fp = _open(FileName, OPEN_FLAGS);
-    if (fp != -1)
+    FILE* fp = _open(FileName, OPEN_FLAGS);
+    if (fp == NULL)
     {
         _close(fp);
         return true;
