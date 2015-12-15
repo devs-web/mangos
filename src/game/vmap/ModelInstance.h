@@ -80,7 +80,7 @@ namespace VMAP
 
 #ifdef MMAP_GENERATOR
         public:
-            WorldModel* const getWorldModel();
+            WorldModelPtr const getWorldModel();
 #endif
     };
 } // namespace VMAP
