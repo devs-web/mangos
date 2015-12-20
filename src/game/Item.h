@@ -154,6 +154,17 @@ enum SellResult
     SELL_ERR_ONLY_EMPTY_BAG                      = 6        // can only do with empty bags
 };
 
+enum FakeResult
+{
+    FAKE_ERR_CANT_FIND_OWNER,
+    FAKE_ERR_CANT_FIND_ITEM,
+    FAKE_ERR_WRONG_QUALITY,
+    FAKE_ERR_DIFF_SLOTS,
+    FAKE_ERR_DIFF_CLASS,
+    FAKE_ERR_DIFF_RACE,
+    FAKE_ERR_OK
+};
+
 // -1 from client enchantment slot number
 enum EnchantmentSlot
 {
@@ -407,6 +418,10 @@ class MANGOS_DLL_SPEC Item : public Object
 
         bool LoadSoulboundTradeableDataFromDB(Player* owner);
         bool CheckSoulboundTradeExpire(Player* owner);
+
+        FakeResult SetFakeDisplay(uint32 iEntry);
+        uint32 GetFakeDisplayEntry() { return m_fakeDisplayEntry; }
+        void RemoveFakeDisplay();
     private:
         void GetDataValuesStr(std::ostringstream& ss);
 
@@ -432,6 +447,7 @@ class MANGOS_DLL_SPEC Item : public Object
         uint16              m_paidExtCost;
 
         AllowedLooterSet    m_allowedLooterGuids;
+        uint32 m_fakeDisplayEntry;
 };
 
 #endif

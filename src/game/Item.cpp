@@ -260,6 +260,8 @@ Item::Item() : loot(NULL)
 
     m_paidCost     = 0;
     m_paidExtCost  = 0;
+
+    m_fakeDisplayEntry = 0;
 }
 
 bool Item::Create(uint32 guidlow, uint32 itemId, Player const* owner)
@@ -509,6 +511,9 @@ bool Item::LoadFromDB(uint32 guidLow, Field* fields, ObjectGuid ownerGuid)
         }
     }
 
+    if (QueryResult* result = CharacterDatabase.PQuery("SELECT fakeEntry FROM fake_items WHERE guid = %u", guidLow))
+        SetFakeDisplay((*result)[0].GetUInt32());
+
     if (needSave)                                          // normal item changed state set not work at loading
     {
         std::ostringstream ss;
@@ -562,6 +567,7 @@ void Item::DeleteFromDB(uint32 guidLow)
 
 void Item::DeleteFromDB()
 {
+    RemoveFakeDisplay();
     DeleteFromDB(GetGUIDLow());
 }
 
@@ -1638,4 +1644,48 @@ bool Item::CheckSoulboundTradeExpire(Player* owner)
     }
 
     return false;
+}
+
+FakeResult Item::SetFakeDisplay(uint32 iEntry)
+{
+    if (!iEntry)
+    {
+        RemoveFakeDisplay();
+        return FAKE_ERR_OK;
+    }
+
+    ItemPrototype const* myTmpl    = GetProto();
+    ItemPrototype const* otherTmpl = ObjectMgr::GetItemPrototype(iEntry);
+
+    if (!otherTmpl)
+        return FAKE_ERR_CANT_FIND_ITEM;
+
+    if (myTmpl->InventoryType != otherTmpl->InventoryType)
+        return FAKE_ERR_DIFF_SLOTS;
+
+    if (myTmpl->AllowableClass != otherTmpl->AllowableClass)
+        return FAKE_ERR_DIFF_CLASS;
+
+    //if (myTmpl->AllowableRace != otherTmpl->AllowableRace)
+        //return FAKE_ERR_DIFF_RACE;
+
+    //if (otherTmpl->Quality == ITEM_QUALITY_LEGENDARY || otherTmpl->Quality == ITEM_QUALITY_POOR)
+        //return FAKE_ERR_WRONG_QUALITY;
+
+    if (m_fakeDisplayEntry != iEntry)
+    {
+        CharacterDatabase.PExecute("REPLACE INTO fake_items VALUES (%u, %u)", GetGUIDLow(), iEntry);
+        m_fakeDisplayEntry = iEntry;
+    }
+
+    return FAKE_ERR_OK;
+}
+
+void Item::RemoveFakeDisplay()
+{
+    if (GetFakeDisplayEntry())
+    {
+        m_fakeDisplayEntry = 0;
+        CharacterDatabase.PExecute("DELETE FROM fake_items WHERE guid = %u", GetGUIDLow());
+    }
 }
