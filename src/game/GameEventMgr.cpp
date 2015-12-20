@@ -654,7 +654,7 @@ uint32 GameEventMgr::Update(ActiveEvents const* activeAtShutdown /*= NULL*/)
         if (calcDelay < nextEventDelay)
             nextEventDelay = calcDelay;
     }
-    BASIC_LOG("Next game event check in %u seconds.", nextEventDelay + 1);
+    DEBUG_LOG("Next game event check in %u seconds.", nextEventDelay + 1);
     return (nextEventDelay + 1) * IN_MILLISECONDS;          // Add 1 second to be sure event has started/stopped at next call
 }
 
@@ -666,7 +666,7 @@ void GameEventMgr::UnApplyEvent(uint16 event_id)
     CharacterDatabase.CreateStatement(delStat, "DELETE FROM game_event_status WHERE event = ?")
         .PExecute(event_id);
 
-    sLog.outString("GameEvent %u \"%s\" removed.", event_id, mGameEvent[event_id].description.c_str());
+    DEBUG_LOG("GameEvent %u \"%s\" removed.", event_id, mGameEvent[event_id].description.c_str());
     // un-spawn positive event tagged objects
     GameEventUnspawn(event_id);
     // spawn negative event tagget objects
@@ -691,7 +691,7 @@ void GameEventMgr::ApplyNewEvent(uint16 event_id, bool resume)
     if (sWorld.getConfig(CONFIG_BOOL_EVENT_ANNOUNCE) && (!mGameEvent[event_id].silent))
         sWorld.SendWorldText(LANG_EVENTMESSAGE, mGameEvent[event_id].description.c_str());
 
-    sLog.outString("GameEvent %u \"%s\" started. %s", event_id, mGameEvent[event_id].description.c_str(), mGameEvent[event_id].silent ? "(hidden)" : "");
+    DEBUG_LOG("GameEvent %u \"%s\" started. %s", event_id, mGameEvent[event_id].description.c_str(), mGameEvent[event_id].silent ? "(hidden)" : "");
     // spawn positive event tagget objects
     GameEventSpawn(event_id);
     // un-spawn negative event tagged objects
