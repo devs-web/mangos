@@ -142,11 +142,38 @@ bool ChatHandler::HandleNameAnnounceCommand(char* args)
 
     switch(m_session->GetSecurity())
     {
+      case SEC_VIP:
+        strid = LANG_SYSTEMMESSAGE_VIP;
+        break;
       case SEC_MODERATOR:
         strid = LANG_SYSTEMMESSAGE_MODERATOR;
         break;
+      case SEC_MODERATORCHIEF:
+        strid = LANG_SYSTEMMESSAGE_MODERATORCHIEF;
+        break;
+      case SEC_GAMEOPERATOR:
+        strid = LANG_SYSTEMMESSAGE_GAMEOPERATOR;
+        break;
+      case SEC_SUPERGAMEOPERATOR:
+        strid = LANG_SYSTEMMESSAGE_SUPERGAMEOPERATOR;
+        break;
       case SEC_GAMEMASTER:
         strid = LANG_SYSTEMMESSAGE_GAMEMASTER;
+        break;
+      case SEC_SUPERGAMEMASTER:
+        strid = LANG_SYSTEMMESSAGE_SUPERGAMEMASTER;
+        break;
+      case SEC_QUALITYASSURANCE:
+        strid = LANG_SYSTEMMESSAGE_QUALITYASSURANCE;
+        break;
+      case SEC_DEVELOPER:
+        strid = LANG_SYSTEMMESSAGE_DEVELOPER;
+        break;
+      case SEC_GAMECHIEF:
+        strid = LANG_SYSTEMMESSAGE_GAMECHIEF;
+        break;
+      case SEC_SUBADMINISTRATOR:
+        strid = LANG_SYSTEMMESSAGE_SUBADMINISTRATOR;
         break;
       case SEC_ADMINISTRATOR:
         strid = LANG_SYSTEMMESSAGE_ADMINISTRATOR;
