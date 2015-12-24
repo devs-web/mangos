@@ -15803,6 +15803,9 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     SetByteValue(UNIT_FIELD_BYTES_0,0,fields[3].GetUInt8());// race
     SetByteValue(UNIT_FIELD_BYTES_0,1,fields[4].GetUInt8());// class
 
+    CrossBGRaceFake = fields[3].GetUInt8(); // race for Cross Faction BG
+    CrossBGRaceReal = fields[3].GetUInt8(); // race for Cross Faction BG
+
     uint8 gender = fields[5].GetUInt8() & 0x01;             // allowed only 1 bit values male/female cases (for fit drunk gender part)
     SetByteValue(UNIT_FIELD_BYTES_0,2,gender);              // gender
 
@@ -15944,6 +15947,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     _LoadBGData(holder->GetResult(PLAYER_LOGIN_QUERY_LOADBGDATA));
 
     bool player_at_bg = false;
+    bool NeedSetCrossFactionBG = false;
 
     // player bounded instance saves loaded in _LoadBoundInstances, group versions at group loading
     DungeonPersistentState* state = GetBoundInstanceSaveForSelfOrGroup(savedLocation.GetMapId());
@@ -15961,6 +15965,23 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
             AddBattleGroundQueueId(bgQueueTypeId);
 
             m_bgData.bgTypeID = currentBg->GetTypeID();     // bg data not marked as modified
+
+            /* Cross Faction BG */
+            Team team        = TeamForRace(CrossBGRaceReal);
+            Team BgCrossTeam = m_bgData.bgTeam;
+            
+            if (team != BgCrossTeam)
+            {
+                NeedSetCrossFactionBG = true;
+                int NewRace     = GetNewRace(CrossBGRaceReal);
+
+                setFactionForRace(NewRace);
+                SetBGTeam(BgCrossTeam);
+
+                CrossBGRaceFake = NewRace;
+                CrossBgFakeTeam = BgCrossTeam;
+            }
+            /* END Cross Faction BG */
 
             // join player to battleground group
             currentBg->EventPlayerLoggedIn(this, GetObjectGuid());
@@ -16425,6 +16446,11 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     if (!GetGroup() || !GetGroup()->isLFDGroup())
     {
         sLFGMgr.RemoveMemberFromLFDGroup(GetGroup(),GetObjectGuid());
+    }
+
+    if (NeedSetCrossFactionBG == true)  // Crossfaction BG
+    {
+        SendPlayerDataCrossBG();
     }
 
     return true;
@@ -20464,6 +20490,7 @@ void Player::LeaveBattleground(bool teleportToEntryPoint)
 {
     if (BattleGround* bg = GetBattleGround())
     {
+        LeaveCrossBG();
         bg->RemovePlayerAtLeave(GetObjectGuid(), teleportToEntryPoint, true);
 
         // call after remove to be sure that player resurrected for correct cast
@@ -25263,4 +25290,165 @@ void Player::SetViewPoint(WorldObject* target, bool immediate, bool update_far_s
         }
         GetCamera()->ResetView(update_far_sight_field);
     }
+}
+
+/* Mod Cross faction BG */
+uint32 Player::GetNewRace (uint32 race)
+{
+    /*
+    * ALLIANCE 1, 3, 4, 7, 11
+    * HORDE    2, 5, 6, 8, 10
+    */
+
+    switch (race)
+    {
+        // Alliance -> Horde
+        case 1: return 2; break;
+        case 3: return 5; break;
+        case 4: return 6; break;
+        case 7: return 8; break;
+        case 11: return 10; break;
+
+        // Horde -> Alliance
+        case 2: return 1; break;
+        case 5: return 3; break;
+        case 6: return 4; break;
+        case 8: return 7; break;
+        case 10: return 11; break;
+
+        default: return 1;
+    }
+    return 0;
+}
+
+void Player::CrossBGJoin()
+{
+    BattleGround* bg   = GetBattleGround();
+    uint32 CntAlliance = bg->GetPlayersCountByTeam(ALLIANCE);
+    uint32 CntHorde    = bg->GetPlayersCountByTeam(HORDE);
+    
+
+    int race        = getRace();
+    int NewRace     = GetNewRace(race);
+    Team team       = TeamForRace(race);
+    CrossBGRaceReal = race;
+    CrossBGRaceFake = race;
+
+
+    if (bg)
+    {
+        if (!bg->isArena())
+        {
+            if (CntAlliance > CntHorde)
+            {
+                if (team == ALLIANCE)
+                {
+                    setFactionForRace(NewRace);
+                    CrossBGRaceFake = NewRace;
+                }
+
+                SetBGTeam(HORDE);
+                CrossBgFakeTeam = HORDE;
+            }
+            else if (CntAlliance < CntHorde)
+            {
+                if (team == HORDE)
+                {
+                    setFactionForRace(NewRace);
+                    CrossBGRaceFake = NewRace;
+                }
+
+                SetBGTeam(ALLIANCE);
+                CrossBgFakeTeam = ALLIANCE;
+            }
+            else
+            {
+                CrossBgFakeTeam = team;
+                SetBGTeam(team);
+                CrossBGRaceFake = race;
+            }
+    
+            SendPlayerDataCrossBG();
+        }
+    }
+}
+
+void Player::LeaveCrossBG()
+{
+    CrossBGRaceFake = CrossBGRaceReal;
+    setFactionForRace(CrossBGRaceReal);
+    SetByteValue(UNIT_FIELD_BYTES_0, 0, CrossBGRaceReal);
+    FakeDisplayID();
+
+    WorldPacket data1(SMSG_INVALIDATE_PLAYER, 8);
+    data1 << GetPackGUID();
+    GetSession()->SendPacket(&data1);
+
+    GetSession()->SendNameQueryOpcode(this);
+}
+
+void Player::FakeDisplayID()
+{
+    PlayerInfo const* info = sObjectMgr.GetPlayerInfo(CrossBGRaceFake, getClass());
+    if (!info)
+    {
+        for (int i = 1; i <= CLASS_DRUID; i++)
+        {
+            info = sObjectMgr.GetPlayerInfo(CrossBGRaceFake, i);
+            if (info)
+                break;
+        }
+    }
+
+    if (!info)
+    {
+        sLog.outError("Player %u has incorrect race/class pair. Can't init display ids.", GetGUIDLow());
+        return;
+    }
+
+    // reset scale before reapply auras
+    SetObjectScale(DEFAULT_OBJECT_SCALE);
+
+    uint8 gender = getGender();
+    switch (gender)
+    {
+        case GENDER_FEMALE:
+            SetDisplayId(info->displayId_f);
+            SetNativeDisplayId(info->displayId_f);
+            break;
+        case GENDER_MALE:
+            SetDisplayId(info->displayId_m);
+            SetNativeDisplayId(info->displayId_m);
+            break;
+        default:
+            sLog.outError("Invalid gender %u for player", gender);
+            return;
+    }
+}
+
+void Player::SendPlayerDataCrossBG ()
+{
+    FakeDisplayID();
+
+    SetByteValue(UNIT_FIELD_BYTES_0, 0, CrossBGRaceFake);
+    WorldPacket data1(SMSG_INVALIDATE_PLAYER, 8);
+    data1 << GetPackGUID();
+    GetSession()->SendPacket(&data1);
+
+    GetSession()->SendNameQueryOpcode(this);
+
+    for (BattleGround::BattleGroundPlayerMap::const_iterator itr = GetBattleGround()->GetPlayers().begin(); itr != GetBattleGround()->GetPlayers().end(); ++itr)
+    {
+        if (Player* pPlayer = ObjectAccessor::FindPlayer(itr->first))
+        {
+            WorldPacket data1(SMSG_INVALIDATE_PLAYER, 8);
+            data1 << GetPackGUID();
+            pPlayer->GetSession()->SendPacket(&data1);
+
+            pPlayer->GetSession()->SendNameQueryOpcode(this);
+        }
+    }
+
+    for (int i = 1; i < LANGUAGES_COUNT; ++i)
+        learnSpell(lang_description[i].spell_id, false);
 }

@@ -1720,6 +1720,7 @@ void World::SetInitialWorldSettings()
 
     uint32 uStartInterval = WorldTimer::getMSTimeDiff(uStartTime, WorldTimer::getMSTime());
     sLog.outString( "SERVER STARTUP TIME: %i minutes %i seconds", uStartInterval / 60000, (uStartInterval % 60000) / 1000 );
+    sBattleGroundMgr.ToggleTesting();
 }
 
 void World::DetectDBCLang()

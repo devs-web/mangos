@@ -1957,7 +1957,15 @@ class MANGOS_DLL_SPEC Player : public Unit
         void CheckAreaExploreAndOutdoor();
 
         static Team TeamForRace(uint8 race);
-        Team GetTeam() const { return m_team; }
+        /* Cross Faction BG */
+        Team GetTeam() const
+        { 
+            if (BattleGround* bg = GetBattleGround())
+                if (!bg->isArena())
+                    return CrossBgFakeTeam;
+
+            return m_team;
+        }
         static uint32 getFactionForRace(uint8 race);
         void setFactionForRace(uint8 race);
 
@@ -2168,8 +2176,36 @@ class MANGOS_DLL_SPEC Player : public Unit
         WorldLocation const& GetBattleGroundEntryPoint() const { return m_bgData.joinPos; }
         void SetBattleGroundEntryPoint(bool forLFG = false);
 
-        void SetBGTeam(Team team) { m_bgData.bgTeam = team; m_bgData.m_needSave = true; }
-        Team GetBGTeam() const { return m_bgData.bgTeam ? m_bgData.bgTeam : GetTeam(); }
+        //void SetBGTeam(Team team) { m_bgData.bgTeam = team; m_bgData.m_needSave = true; }
+        //Team GetBGTeam() const { return m_bgData.bgTeam ? m_bgData.bgTeam : GetTeam(); }
+
+        // Cross Faction BG
+        void SetBGTeam(Team team)
+        { 
+            if (BattleGround* bg = GetBattleGround())
+                m_bgData.bgTeam = !bg->isArena() ? CrossBgFakeTeam : team;
+            else
+                m_bgData.bgTeam = team;
+
+           m_bgData.m_needSave = true; 
+        }
+        
+        Team GetBGTeam() const
+        {
+            if (BattleGround* bg = GetBattleGround())
+                if (!bg->isArena())
+                    return CrossBgFakeTeam;
+
+            return m_bgData.bgTeam ? m_bgData.bgTeam : GetTeam();
+        }
+
+        void CrossBGJoin();
+        void LeaveCrossBG();
+        void FakeDisplayID ();
+        void SendPlayerDataCrossBG ();
+
+        uint32 GetNewRace (uint32 race);
+        // END Cross Faction BG
 
         void LeaveBattleground(bool teleportToEntryPoint = true);
         bool CanJoinToBattleground() const;

@@ -499,6 +499,8 @@ void WorldSession::HandleBattleFieldPortOpcode(WorldPacket& recv_data)
 
             // set the destination instance id
             _player->SetBattleGroundId(bg->GetInstanceID(), bgTypeId);
+            // Set Cross BG
+            _player->CrossBGJoin();
             // set the destination team
             _player->SetBGTeam(ginfo.GroupTeam);
             // bg->HandleBeforeTeleportToBattleGround(_player);
