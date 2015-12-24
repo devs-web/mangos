@@ -2593,6 +2593,9 @@ class MANGOS_DLL_SPEC Player : public Unit
         ObjectGuid m_lootGuid;
 
         Team m_team;
+        Team CrossBgFakeTeam;   // For Cross faction BG
+        uint32 CrossBGRaceReal; // For Cross faction BG
+        uint32 CrossBGRaceFake; // For Cross faction BG
         uint32 m_nextSave;
         time_t m_speakTime;
         uint32 m_speakCount;
