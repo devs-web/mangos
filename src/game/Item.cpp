@@ -1663,8 +1663,8 @@ FakeResult Item::SetFakeDisplay(uint32 iEntry)
     if (myTmpl->InventoryType != otherTmpl->InventoryType)
         return FAKE_ERR_DIFF_SLOTS;
 
-    if (myTmpl->AllowableClass != otherTmpl->AllowableClass)
-        return FAKE_ERR_DIFF_CLASS;
+    //if (myTmpl->AllowableClass != otherTmpl->AllowableClass)
+        //return FAKE_ERR_DIFF_CLASS;
 
     //if (myTmpl->AllowableRace != otherTmpl->AllowableRace)
         //return FAKE_ERR_DIFF_RACE;
