@@ -70,6 +70,18 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     recv_data >> type;
     recv_data >> lang;
 
+    if (lang != LANG_ADDON)
+    {
+        switch (type)
+        {
+        case CHAT_MSG_BATTLEGROUND:
+        case CHAT_MSG_BATTLEGROUND_LEADER:
+            lang = LANG_UNIVERSAL;
+        default:
+            break;
+        }
+    }
+
     if (type >= MAX_CHAT_MSG_TYPE)
     {
         sLog.outError("CHAT: Wrong message type received: %u", type);
