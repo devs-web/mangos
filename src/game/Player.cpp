@@ -22713,7 +22713,8 @@ Item* Player::ConvertItem(Item* item, uint32 newItemId)
 
 uint32 Player::CalculateTalentsPoints() const
 {
-    uint32 base_level = getClass() == CLASS_DEATH_KNIGHT ? 55 : 9;
+    uint32 dk_talents  = sWorld.getConfig(CONFIG_BOOL_DK_TALENT) == true ? 55 : 9;
+    uint32 base_level  = getClass() == CLASS_DEATH_KNIGHT ? dk_talents : 9;
     uint32 base_talent = getLevel() <= base_level ? 0 : getLevel() - base_level;
 
     uint32 talentPointsForLevel = base_talent + m_questRewardTalentCount;

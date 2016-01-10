@@ -771,6 +771,11 @@ LexicsCutterNoActionOnGM = 1
 #        Staring level that have character of heroic class at creating (in range 1 to MaxPlayerLevel)
 #        Default: 55
 #
+#    HeroicPlayerTalentsDefault
+#        Staring class DK talents not fun.
+#        Default: 1 - 0 talents, blizzlike
+#                 0 - 46 talents, FUN
+#
 #    StartPlayerMoney
 #        Amount of money that new players will start with.
 #        If you want to start with one silver, use for example 100 (100 copper = 1 silver)
@@ -1118,6 +1123,7 @@ SkipCinematics = 0
 MaxPlayerLevel = 80
 StartPlayerLevel = 1
 StartHeroicPlayerLevel = 55
+HeroicPlayerTalentsDefault = 1
 StartPlayerMoney = 0
 MaxHonorPoints = 75000
 StartHonorPoints = 0
