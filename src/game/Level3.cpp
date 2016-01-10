@@ -57,6 +57,7 @@
 #include "DBCEnums.h"
 #include "AuctionHouseBot/AuctionHouseBot.h"
 #include "SQLStorages.h"
+#include "CustomVendor.h"
 
 static uint32 ahbotQualityIds[MAX_AUCTION_QUALITY] =
 {
@@ -644,6 +645,19 @@ bool ChatHandler::HandleReloadNpcVendorCommand(char* /*args*/)
     sLog.outString("Re-Loading `npc_vendor` Table!");
     sObjectMgr.LoadVendors();
     SendGlobalSysMessage("DB table `npc_vendor` reloaded.");
+    return true;
+}
+
+bool ChatHandler::HandleReloadCustomVendorCommand(char* /*args*/)
+{
+    sLog.outString("Loading custom vendors");
+    sLog.outString(">> Loaded %u custom vendor catageory entries", CustomVendorMgr.LoadVendors());
+    SendGlobalSysMessage("DB table `custom_vendor` reloaded.");
+
+    sLog.outString("Loading custom vendors entry");
+    sLog.outString(">> Loaded %u custom vendor entry", CustomVendorMgr2.LoadVendorsId());
+    SendGlobalSysMessage("Reloaded custom vendors entry.");
+
     return true;
 }
 

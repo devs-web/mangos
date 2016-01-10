@@ -1049,6 +1049,7 @@ class MANGOS_DLL_SPEC Player : public Unit
     friend void Item::AddToUpdateQueueOf(Player *player);
     friend void Item::RemoveFromUpdateQueueOf(Player *player);
     public:
+        int currentVendorEntry;
         explicit Player (WorldSession *session);
         ~Player ();
 

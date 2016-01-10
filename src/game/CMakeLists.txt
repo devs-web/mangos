@@ -75,6 +75,8 @@ CreatureEventAIMgr.h
 Creature.h
 CreatureLinkingMgr.cpp
 CreatureLinkingMgr.h
+CustomVendor.cpp
+CustomVendor.h
 DBCEnums.h
 DBCfmt.h
 DBCStores.cpp

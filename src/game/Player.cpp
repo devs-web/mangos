@@ -65,6 +65,7 @@
 #include "DBCStores.h"
 #include "SQLStorages.h"
 #include "Calendar.h"
+#include "CustomVendor.h"
 
 #include <cmath>
 
@@ -407,6 +408,7 @@ Player::Player(WorldSession* session): Unit(), m_mover(this), m_camera(NULL), m_
 {
     m_speakTime = 0;
     m_speakCount = 0;
+    currentVendorEntry = 0;
 
     m_objectType |= TYPEMASK_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
@@ -20011,7 +20013,9 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorGuid, uint32 vendorslot, uin
         return false;
     }
 
-    VendorItemData const* vItems = pVendor->GetVendorItems();
+    // Multivendor, 2 LINE, default: VendorItemData const* vItems = pVendor->GetVendorItems();    
+    bool IsCustomVendor = CustomVendorMgr2.GetItemsForEntry(pVendor->GetCreatureInfo()->Entry);
+    VendorItemData const* vItems = IsCustomVendor ? sObjectMgr.GetNpcVendorItemList(currentVendorEntry) : pVendor->GetVendorItems();
     VendorItemData const* tItems = pVendor->GetVendorTemplateItems();
     if ((!vItems || vItems->Empty()) && (!tItems || tItems->Empty()))
     {

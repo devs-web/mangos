@@ -31,6 +31,7 @@
 #include "BattleGround/BattleGround.h"
 #include "OutdoorPvP/OutdoorPvP.h"
 #include "movementGenerators/WaypointMovementGenerator.h"
+#include "CustomVendor.h"
 
 #include "revision_nr.h"
 
@@ -709,6 +710,12 @@ void ScriptMgr::LoadScripts(ScriptMapMapName& scripts, const char* tablename)
 
     sLog.outString();
     sLog.outString(">> Loaded %u script definitions", count);
+
+    sLog.outString("Loading custom vendors");
+    sLog.outString(">> Loaded %u custom vendor catageory entries", CustomVendorMgr.LoadVendors());
+    sLog.outString();
+    sLog.outString("Loading custom vendors entry");
+    CustomVendorMgr2.LoadVendorsId();
 }
 
 void ScriptMgr::LoadGameObjectScripts()
