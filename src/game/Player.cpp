@@ -6936,7 +6936,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, float honor)
             if (!cVictim->IsRacialLeader())
                 return false;
 
-            honor = 2000;                                    // ??? need more info
+            honor = sWorld.getConfig(CONFIG_UINT32_REWARD_HONOR_BOSS);  // ??? need more info
             victim_rank = 19;                               // HK: Leader
 
             if (groupsize > 1)
