@@ -4132,6 +4132,34 @@ bool ChatHandler::HandleUnAuraCommand(char* args)
     return true;
 }
 
+bool ChatHandler::HandleFreezeCommand(char* args)
+{
+    Unit* target = getSelectedUnit();
+    if (!target)
+    {
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    target->CastSpell(target, 9454, false);
+    return true;
+}
+
+bool ChatHandler::HandleUnFreezeCommand(char* args)
+{
+    Unit* target = getSelectedUnit();
+    if(!target)
+    {
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    target->RemoveAurasDueToSpell(9454);
+    return true;
+}
+
 bool ChatHandler::HandleLinkGraveCommand(char* args)
 {
     uint32 g_id;
