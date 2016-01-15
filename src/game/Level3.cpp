@@ -7845,3 +7845,36 @@ bool ChatHandler::HandleTransportStopCommand(char* args)
     transport->Stop();
     return true;
 }
+
+bool ChatHandler::HandleeventbonusaddCommand(char* args)
+{
+    if (!*args)
+        return false;
+
+    int cntev = (int)atof(args);
+    
+    Player* player = m_session->GetPlayer();
+
+    Player* target = getSelectedPlayer();
+
+    if (target == NULL)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+    
+    if (cntev > 0 && cntev < 4)
+    {
+        LoginDatabase.PExecute("UPDATE account SET `EventBonus`=(`EventBonus` + %u) WHERE `id` = '%u'", cntev, target->GetSession()->GetAccountId());
+        PSendSysMessage("You modified Event Bonus: %u", cntev, target->GetName());
+        ChatHandler(target).PSendSysMessage("Game master %s modified Event Bonus on +%u", player->GetName(), cntev);
+    }
+    else
+    {
+        PSendSysMessage("Incorrect value. Use 1, 2 or 3. Now: %u", cntev);
+        return false;
+    }
+
+    return true;
+}

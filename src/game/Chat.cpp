@@ -877,6 +877,7 @@ ChatCommand* ChatHandler::getCommandTable()
         { "mmap",           SEC_GAMEMASTER,     false, NULL,                                           "", mmapCommandTable },
         { "ws",             SEC_GAMEMASTER,     false, NULL,                                           "", WSCommandTable },
         { "transport",      SEC_ADMINISTRATOR,  false, NULL,                                           "", transportCommandTable },
+        { "eventbonusadd",  SEC_ADMINISTRATOR,  false, &ChatHandler::HandleeventbonusaddCommand,       "", NULL },
 
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };

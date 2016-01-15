@@ -667,6 +667,9 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleTransportStopCommand(char* args);
         bool HandleTransportCommand(char* args);
 
+        // Event Bonus add
+        bool HandleeventbonusaddCommand(char* args);
+
         //! Development Commands
         bool HandleSaveAllCommand(char* args);
 
