@@ -1,3 +1,18 @@
+CREATE TABLE `chat_log_cmd` (
+  `guid` int(255) NOT NULL AUTO_INCREMENT,
+  `date_time` datetime DEFAULT NULL,
+  `cmd` text,
+  `name` text,
+  `accid` int(255) DEFAULT NULL,
+  `x` float(255,2) DEFAULT NULL,
+  `y` float(255,2) DEFAULT NULL,
+  `z` float(255,2) DEFAULT NULL,
+  `map` int(255) DEFAULT NULL,
+  `selected` text,
+  `cmdname` text,
+  PRIMARY KEY (`guid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 -- Random Battleground
 --
 

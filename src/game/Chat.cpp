@@ -3587,6 +3587,35 @@ void ChatHandler::LogCommand(char const* fullcmd)
         sLog.outCommand(GetAccountId(), "Command: %s [Player: %s (Account: %u) X: %f Y: %f Z: %f Map: %u Selected: %s]",
                         fullcmd, p->GetName(), GetAccountId(), p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetMapId(),
                         sel_guid.GetString().c_str());
+
+        if (sChatLog.m_uiChatLogMethod == CHAT_LOG_METHOD_SQL)
+        {
+            char const* _fullcmd = fullcmd;
+            ChatCommand* command = NULL;
+            ChatCommand* parentCommand = NULL;
+            ChatCommandSearchResult res = FindCommand(getCommandTable(), fullcmd, command, &parentCommand);
+
+            char buff[255];
+            sprintf(buff, "%s %s", parentCommand ? parentCommand->Name : "", command ? command->Name : "");
+            
+            static SqlStatementID insChat;
+            SqlStatement stmt = CharacterDatabase.CreateStatement(insChat, "INSERT INTO `chat_log_cmd` (`date_time`,`cmd`,`name`,`accid`,`x`,`y`,`z`,`map`,`selected`, `cmdname`) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+            stmt.addString(_fullcmd);
+            stmt.addString(p->GetName());
+            stmt.addUInt32(GetAccountId());
+
+            stmt.addFloat(p->GetPositionX());
+            stmt.addFloat(p->GetPositionY());
+            stmt.addFloat(p->GetPositionZ());
+            stmt.addUInt32(p->GetMapId());
+
+            stmt.addString(sel_guid.GetString().c_str());
+
+            stmt.addString(buff);
+
+            stmt.Execute();
+        }
     }
     else                                        // 0 account -> console
     {
