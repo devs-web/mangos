@@ -20106,9 +20106,14 @@ bool Player::BuyItemFromVendorSlot(ObjectGuid vendorGuid, uint32 vendorslot, uin
                 return false;
             }
         }
+        
+        bool IgnoreRaiting = false;
+        
+        if (sWorld.getConfig(CONFIG_BOOL_VIP_A_R_DISABLE) == true)
+            IgnoreRaiting = GetSession()->GetSecurity() >= SEC_VIP ? true : false;        
 
         // check for personal arena rating requirement
-        if (GetMaxPersonalArenaRatingRequirement(iece->reqarenaslot) < iece->reqpersonalarenarating)
+        if (GetMaxPersonalArenaRatingRequirement(iece->reqarenaslot) < iece->reqpersonalarenarating && IgnoreRaiting == false)
         {
             // probably not the proper equip err
             SendEquipError(EQUIP_ERR_CANT_EQUIP_RANK, NULL, NULL);

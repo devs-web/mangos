@@ -776,6 +776,11 @@ LexicsCutterNoActionOnGM = 1
 #        Default: 1 - 0 talents, blizzlike
 #                 0 - 46 talents, FUN
 #
+#    disablearenaraitingvendorforvip
+#        Disable arena raiting buy from vendor for >= VIP players
+#        Default: 0 - disable, default
+#                 1 - Enable
+#
 #    StartPlayerMoney
 #        Amount of money that new players will start with.
 #        If you want to start with one silver, use for example 100 (100 copper = 1 silver)
@@ -1124,6 +1129,7 @@ MaxPlayerLevel = 80
 StartPlayerLevel = 1
 StartHeroicPlayerLevel = 55
 HeroicPlayerTalentsDefault = 1
+disablearenaraitingvendorforvip = 0
 StartPlayerMoney = 0
 MaxHonorPoints = 75000
 StartHonorPoints = 0
