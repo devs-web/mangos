@@ -7867,7 +7867,7 @@ bool ChatHandler::HandleeventbonusaddCommand(char* args)
     if (cntev > 0 && cntev < 4)
     {
         LoginDatabase.PExecute("UPDATE account SET `EventBonus`=(`EventBonus` + %u) WHERE `id` = '%u'", cntev, target->GetSession()->GetAccountId());
-        PSendSysMessage("You modified Event Bonus: %u", cntev, target->GetName());
+        PSendSysMessage("You modified Event Bonus: +%u, Player: %s", cntev, target->GetName());
         ChatHandler(target).PSendSysMessage("Game master %s modified Event Bonus on +%u", player->GetName(), cntev);
     }
     else
